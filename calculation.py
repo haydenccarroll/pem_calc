@@ -57,7 +57,8 @@ class Evaluator(): # the evaluator class
                                            r'\+[\-]*\+', r' ',
                                           r'^\+', 
                                           r'(\-[^1])|(\-$)', 
-                                          r'\&\(', r'\*$', r'(\d[A-Za-z])|([a-zA-Z]\d)', r'^\*'], inp) #if the user has an unecessary addition in situations such as (+2) *+ -+. i need to get rid of the second index of the match, which would be the plus. 
+                                          r'\&\(', r'\*$', 
+                                          r'(\d[A-Za-z])|([a-zA-Z]\d)', r'^\*'], inp) #if the user has an unecessary addition in situations such as (+2) *+ -+. i need to get rid of the second index of the match, which would be the plus. 
             return re_1_list
         temp_define_list = define_lists(inp)  
         
@@ -73,6 +74,7 @@ class Evaluator(): # the evaluator class
                 inp.insert(i, '+-1*')
                 inp = list("".join([str(x) for x in inp]))
                 temp_define_list = define_lists(inp)
+
             for i in temp_define_list[re6]: del inp[i]
             temp_define_list = define_lists(inp)   
             for i in temp_define_list[re2]: inp.insert(i+1, '*')
@@ -349,7 +351,6 @@ class Evaluator(): # the evaluator class
     
 
     def calculation(self, inp, print_bool): # the basic calculation function, which calls the functions necessary to calculation in the correct order
-        print(inp, 'inp when calculatoin first gets called')
         
         def stage(message, function, inp, print_bool): 
 
@@ -376,7 +377,6 @@ class Evaluator(): # the evaluator class
         inp = stage('Multiplication/Division Output: ', self.multiplication_division_calc, inp, print_bool)
         inp = stage('Addition/Subtraction Output: ', self.addition_subtraction_calc, inp, print_bool)
         
-        print('inp  right before the legendary inp[0]', inp)
         if float(inp[0]) % 1 == 0:
             inp = int(float(inp[0]))
         else:
