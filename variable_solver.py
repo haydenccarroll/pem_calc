@@ -82,6 +82,15 @@ def define_dictionary(inpt):
             dict_of_indexes_of_vars[var_name].append([i[0], inner_index]) # appends to the list, with the term index, as well as the index in said term. 
     return dict_of_indexes_of_vars
 
+def only_duplicate_var_dictionary(dict_inpt):
+    list_to_del = []
+    for k,v in dict_inpt.items():
+        if len(v) <= 1:
+            list_to_del.append(k)
+    
+    for i in list_to_del:
+        dict_inpt.pop(i)
+    return dict_inpt
 def actual_parsing(inpt):
     inpt = re.split(r'(\+)', "".join(inpt)) # splits into terms
     # Put the for below in a while
@@ -105,17 +114,16 @@ def actual_parsing(inpt):
             if len(v) > 1:
                 run_loop = True
         dict_of_indexes_of_vars = define_dictionary(inpt)
-        for key, val in dict_of_indexes_of_vars.items():
+        for key, val in only_duplicate_var_dictionary(dict_of_indexes_of_vars).items():
             if len(val) > 1:
                 temp_inpt = inpt
                 temp_inpt_calc_obj = calculation.Evaluator(temp_inpt)
                 
-                print('this is BEFORE the temp_inpt_left_num and temp inpt val 00', temp_inpt[val[0][0]])
 
                 
                 temp_inpt_left_num = re.sub(r'[a-zA-Z]+', '1', temp_inpt[val[0][0]])
+                
                 #temp_inpt_left_num = "".join(gets_rid_of_useless_multiplication(temp_inpt_left_num))
-                print('this is the temp_inpt_left_num and temp inpt val 00', temp_inpt_left_num, temp_inpt[val[0][0]])
                 temp_inpt_left_num = float(temp_inpt_calc_obj.calculation(temp_inpt_left_num, False))
             
                 temp_inpt_right_num = re.sub(r'[a-zA-Z]+', '1', temp_inpt[val[1][0]])
@@ -130,7 +138,7 @@ def actual_parsing(inpt):
                 temp_inpt.append('+%s'%result)
                 del temp_inpt[val[0][0]]
                 inpt = temp_inpt
-                
+
 
             elif times_ran == 0 and len(val) == 1:
                 temp_inpt = inpt
@@ -140,16 +148,14 @@ def actual_parsing(inpt):
                 #temp_inpt_left_num = "".join(gets_rid_of_useless_multiplication(temp_inpt_left_num))
                 
                 
-                print(temp_inpt_left_num, 'temp inpt left num and temp_inpt at 143', temp_inpt)
-                    
+
                 result = float(temp_inpt_calc_obj.calculation(temp_inpt_left_num, False))
                 result = '%s*%s'%(result, key)
                 temp_inpt.append('+%s'%result)
                 del temp_inpt[val[0][0]]
                 inpt = temp_inpt
-                
-                
-            dict_of_indexes_of_vars = define_dictionary(inpt)  
+            break    
+        dict_of_indexes_of_vars = define_dictionary(inpt)  
         while "".join(inpt).find('++') != -1:
             inpt = "".join(inpt).replace('++', '+')              
         
@@ -157,16 +163,13 @@ def actual_parsing(inpt):
         
 
         times_ran += 1
-    print('this is inpt at 157', inpt)
     list_to_calculate = []
     for term in inpt:
-        print(term, 'term at 155', 'and input', inpt)
         if (not [x for x in term if (x.isalpha() or x == '+' or term == '')]) and term: # if there is a non var term, 
             list_to_calculate.append(term) # append
     try:
         if list_to_calculate[-1] == '+':
             del list_to_calculate[-1]
-        print('list to calculate, ', list_to_calculate)
     except IndexError:
         list_to_calculate = ''
     for i in range(len(list_to_calculate))[::-1]:
@@ -178,8 +181,7 @@ def actual_parsing(inpt):
         the_non_var_value = non_var_terms_calc.calculation(list_to_calculate, False)
     except IndexError:
         the_non_var_value = ''
-    print(inpt, 'inpt then type(inpt)', type(inpt), 'the non var value', the_non_var_value)
-    
+
     indexes_of_non_vars = [x[0] for x in enumerate(inpt) if not [i for i in x[1] if i.isalpha() or x[1] == '+']]
     
     for i in indexes_of_non_vars[::-1]:
@@ -201,10 +203,12 @@ print('\n\n%s'%inpt)
 
 
 '''
+    AS FAR AS INPUT GOES IN THE FUTURE:
+        EXPONENTS NEED TO BE IN PARANTHESIS, SO IT DOES NOT SPLIT ON PLUSSES
 
 
-    try 3x+3c-2x+3c
-
+    I BELIEVE IT IS MOSTLY FUNCTOINAL
+    
     2/x simplifies to 2x this is not correct obviously
 
     simplifying variable terms into exponents does NOT work as of 3:53 5/2/19
