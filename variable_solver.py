@@ -1,48 +1,3 @@
-'''
-import re
-def convert_to_ymxb_form(inp):
-    inp = re.split(r'([\+\=])', inp)
-   
-    def redefine_indexes(inp):
-        indexes_of_y = []
-        indexes_of_x = []
-        indexes_of_operators = []
-        index_of_equal = None
-        for i in enumerate(inp):
-            if (i[1]).find('y') != -1:
-                print(i[0], i[1], 'finding y')
-                indexes_of_y.append(i[0])
-            if i[1].find('=') != -1:
-                index_of_equal = i[0]
-            if i[1].find('x') != -1:
-                indexes_of_x.append(i[0])
-            if i[1].find('+') != -1:
-                indexes_of_operators.append(i[0])
-        return indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators      
-    
-    indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
-    for i in indexes_of_y:
-        print(i, index_of_equal, indexes_of_y)
-        if i > index_of_equal:
-            print('is tjos ever ran? also here is index_of_equal and i', index_of_equal, i, inp)
-            inp.append('-%s+'%inp[i])
-            inp.insert(0, '-%s+'%inp[i])
-            inp = re.split(r'([\+\=])', "".join(inp))
-            indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
-    for i in [x for x  in range(0,len(inp)) if ((x not in indexes_of_y) and (x not in indexes_of_operators))]:
-        print(inp)
-        print(i, index_of_equal, indexes_of_y, indexes_of_operators, 'this is at ln 31', i)
-        if i < index_of_equal:
-            print('is tjos ever ran? also here is index_of_equal and i', index_of_equal, i, inp)
-            inp.append('+-%s+'%inp[i])
-            inp.insert(0, '+-%s+'%inp[i])
-            inp = re.split(r'([\+\=])', "".join(inp))
-            indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
-    print(inp)
-convert_to_ymxb_form('3x=3y+2')
-
-'''
-
 import re
 import calculation
 import time
@@ -53,11 +8,31 @@ class VariableSolver:
         self.input_str   = ''.join(regex_correction_for_input.regex_correction(input_string))
         
     def split_input_str_into_list(self, input_string):  #is never used
-        return re.split(r'(\+)', input_string)
+        input_string = [x for x in re.split(r'(\+)', input_string) if x != '' ]
+        left_paran_count, right_paran_count, indexes, stuff_waiting_to_append = 0, 0, [], []
+        for i in enumerate(input_string):
+            if '(' in i[1]:
+                stuff_waiting_to_append.append(i[0])
+                left_paran_count += i[1].count('(')
+            if ')' in i[1]:
+                stuff_waiting_to_append.append(i[0])
+                right_paran_count += i[1].count(')')
+            
+                if left_paran_count == right_paran_count:
+                    x, y = stuff_waiting_to_append[0], stuff_waiting_to_append[-1]
+                    indexes.append((x, y))
+                    stuff_waiting_to_append = []
+        indexes.reverse()
+        vals_and_indexes = list(map(lambda x: (''.join(input_string[x[0]:x[1]+1]), x[0], x[1]), indexes))
+    
+        for i,x,y in vals_and_indexes:
+            del input_string[x:y+1]
+            input_string.insert(x, i)
+        return input_string
 
     def simplify_variable_term_exponents_into_multiplication(self, input_string): #doesnt work i dont think. It does for each term it should do for str
         terms = []
-        for term in re.split(r'(\+)', input_string):
+        for term in self.split_input_str_into_list(input_string):
             exponent_vars = re.findall(r'([A-Za-z])(\^)(\()(\d+)(\))', term)
             if exponent_vars:
                 for i,z in enumerate(exponent_vars):
@@ -69,7 +44,7 @@ class VariableSolver:
     def variable_term_into_exponents(self, input_string): #make it work with a string not an individual term
         input_string = self.simplify_variable_term_exponents_into_multiplication(input_string) # converts everything to multiplication form first, because a specific formaat is needed for vars_into_exponents to wrok
         terms = []
-        for term in re.split(r'(\+)', input_string):
+        for term in self.split_input_str_into_list(input_string):
             list_of_vars = re.findall(r'[a-zA-Z]', term)
             if list_of_vars:
                 term = re.sub(r'[a-zA-Z]', '', term)
@@ -87,12 +62,7 @@ class VariableSolver:
         input_string = ''.join(terms)
         return input_string
         
-        
-        '''NEED TO FINISH WORK HERE. I HAVE A LIST OF ALL VARS, 
-        I NEED TO FIND EACH UNIQUE ITEM IN THAT LIST, AND DO "".JOIN(LIST_OF_VARS) ON IT. 
-        HAVE LIST OF TUPLE WITH VARS AND NUMBER OF OCCURANCES DELETE ALL VARIABLES IN LIST,
-        THEN ADD THEM AT THE END'''
-        
+
     def regex_correction_for_terms(self, input_string):
         
         input_regex_correction = calculation.Evaluator(input_string)
@@ -102,7 +72,7 @@ class VariableSolver:
         return input_string
         
     def get_rid_of_useless_multi(self, input_string):
-        input_list = re.split(r'(\+)', input_string)
+        input_list = self.split_input_str_into_list(input_string)
         i = 0
         terms = [x  for x in input_list if len(x) >= 1]
         for term in terms:    #  gets rid of unnecessary multiplication and adds 1s
@@ -120,7 +90,7 @@ class VariableSolver:
         return input_string
 
     def create_dict_of_vars_to_indexes(self, input_string, *no_duplicates):
-        input_list = re.split(r'(\+)', input_string)
+        input_list = self.split_input_str_into_list(input_string)
         dict_of_indexes_of_vars = dict()
         
         for i in enumerate(input_list):       
@@ -159,7 +129,7 @@ class VariableSolver:
                 run_loop = False
             
             for key, val in self.create_dict_of_vars_to_indexes(input_string, True).items():
-                temp_input = re.split(r'(\+)', input_string)
+                temp_input = self.split_input_str_into_list(input_string)
                 temp_input_calc_obj = calculation.Evaluator(temp_input)
             
                 temp_input_left_num = re.sub(r'[a-zA-Z]+', '1', temp_input[val[0][0]])
@@ -179,7 +149,7 @@ class VariableSolver:
             for key, val in self.create_dict_of_vars_to_indexes(input_string).items(): #simplifies terms even if they don't need to be combined. only runs once
                 
                 if times_ran == 0 and len(val) == 1:
-                    temp_input = re.split(r'(\+)', input_string)
+                    temp_input = self.split_input_str_into_list(input_string)
                     temp_input_calc_obj = calculation.Evaluator(temp_input)
                     temp_input_left_num = re.sub(r'[a-zA-Z]+', '1', temp_input[val[0][0]])
                     #temp_inpt_left_num = "".join(gets_rid_of_useless_multiplication(temp_inpt_left_num))
@@ -196,7 +166,7 @@ class VariableSolver:
     
             times_ran += 1
             
-        input_list = re.split(r'(\+)', input_string)
+        input_list = self.split_input_str_into_list(input_string)
         list_to_calculate = []
         for term in input_list:
             if (not [x for x in term if (x.isalpha() or x == '+' or term == '')]) and term: # if there is a non var term, 
@@ -238,18 +208,18 @@ class VariableSolver:
         input_string = re.sub(r'([a-zA-Z])\^\(1\)', '\g<1>', input_string)
         
         sum_of_vars = []
-        for term in re.split(r'(\+)', self.simplify_variable_term_exponents_into_multiplication(input_string)):
+        for term in self.split_input_str_into_list(self.simplify_variable_term_exponents_into_multiplication(input_string)):
             list_of_vars = re.findall(r'[a-zA-Z]', term)
             print(term, list_of_vars)
             if list_of_vars:
                 set_of_vars = set(list_of_vars)
                 sum_of_vars.append(sum(list(map(lambda x: ''.join(list_of_vars).count(x), set_of_vars))))
-        print(sum_of_vars)
+        print(sum_of_vars, 'sum of vars')
             
         return input_string
 
 def main():
-    var =  VariableSolver(' x+y+y^(2)+y^(2)+y^(2)')
+    var =  VariableSolver('(3+2y)y')
     print('input:', var.input_str)
     var.input_str = var.simplify_variable_term_exponents_into_multiplication(var.input_str)
     print('after to multi:', var.input_str)
@@ -267,6 +237,7 @@ def main():
 if __name__ == '__main__': main()
 
 '''
+
     INPUT REQS:
         EXPONENTS NEED TO BE IN PARANTHESIS
 
@@ -278,8 +249,16 @@ WORKKING AT 240
 
 
 
+things that do not currently work:
+    division
+    does not do variables in ascending order
+    make regex_correction do x^2+23d^2 --> x^(2+23d^2)
+    variable paranthesis --> (3+y)y does not work
+    
+'''
 
-    AS FAR AS INPUT GOES IN THE FUTURE:
+'''
+    AS FAR AS INPUT GOES:
         EXPONENTS NEED TO BE IN PARANTHESIS, SO IT DOES NOT SPLIT ON PLUSSES
 
 
