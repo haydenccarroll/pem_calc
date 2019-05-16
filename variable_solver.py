@@ -1,3 +1,48 @@
+'''
+import re
+def convert_to_ymxb_form(inp):
+    inp = re.split(r'([\+\=])', inp)
+   
+    def redefine_indexes(inp):
+        indexes_of_y = []
+        indexes_of_x = []
+        indexes_of_operators = []
+        index_of_equal = None
+        for i in enumerate(inp):
+            if (i[1]).find('y') != -1:
+                print(i[0], i[1], 'finding y')
+                indexes_of_y.append(i[0])
+            if i[1].find('=') != -1:
+                index_of_equal = i[0]
+            if i[1].find('x') != -1:
+                indexes_of_x.append(i[0])
+            if i[1].find('+') != -1:
+                indexes_of_operators.append(i[0])
+        return indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators      
+    
+    indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
+    for i in indexes_of_y:
+        print(i, index_of_equal, indexes_of_y)
+        if i > index_of_equal:
+            print('is tjos ever ran? also here is index_of_equal and i', index_of_equal, i, inp)
+            inp.append('-%s+'%inp[i])
+            inp.insert(0, '-%s+'%inp[i])
+            inp = re.split(r'([\+\=])', "".join(inp))
+            indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
+    for i in [x for x  in range(0,len(inp)) if ((x not in indexes_of_y) and (x not in indexes_of_operators))]:
+        print(inp)
+        print(i, index_of_equal, indexes_of_y, indexes_of_operators, 'this is at ln 31', i)
+        if i < index_of_equal:
+            print('is tjos ever ran? also here is index_of_equal and i', index_of_equal, i, inp)
+            inp.append('+-%s+'%inp[i])
+            inp.insert(0, '+-%s+'%inp[i])
+            inp = re.split(r'([\+\=])', "".join(inp))
+            indexes_of_y, indexes_of_x, index_of_equal, indexes_of_operators = redefine_indexes(inp)
+    print(inp)
+convert_to_ymxb_form('y=2y+2')
+
+'''
+
 import re
 import calculation
 import time
@@ -8,27 +53,13 @@ class VariableSolver:
         self.input_str   = ''.join(regex_correction_for_input.regex_correction(input_string))
         
     def split_input_str_into_list(self, input_string):  #is never used
-        input_string = [x for x in re.split(r'(\+)', input_string) if x != '' ]
-        left_paran_count, right_paran_count, indexes, stuff_waiting_to_append = 0, 0, [], []
-        for i in enumerate(input_string):
-            if '(' in i[1]:
-                stuff_waiting_to_append.append(i[0])
-                left_paran_count += i[1].count('(')
-            if ')' in i[1]:
-                stuff_waiting_to_append.append(i[0])
-                right_paran_count += i[1].count(')')
-            
-                if left_paran_count == right_paran_count:
-                    x, y = stuff_waiting_to_append[0], stuff_waiting_to_append[-1]
-                    indexes.append((x, y))
-                    stuff_waiting_to_append = []
-        indexes.reverse()
-        vals_and_indexes = list(map(lambda x: (''.join(input_string[x[0]:x[1]+1]), x[0], x[1]), indexes))
-    
-        for i,x,y in vals_and_indexes:
-            del input_string[x:y+1]
-            input_string.insert(x, i)
-        return input_string
+        l_paran_count, r_paran_count, new_input_string = 0, 0, []
+        for i in input_string:
+            if '(' == i: l_paran_count += 1
+            elif ')' == i: r_paran_count += 1
+            if l_paran_count != r_paran_count: new_input_string.append(i.replace('+', 'É'))
+            else: new_input_string.append(i)
+        return [x for x in list(map(lambda x: x.replace('É', '+'), re.split(r'(\+)', ''.join(new_input_string)))) if x != '']
 
     def simplify_variable_term_exponents_into_multiplication(self, input_string): #doesnt work i dont think. It does for each term it should do for str
         terms = []
@@ -119,8 +150,6 @@ class VariableSolver:
 
 
     def parsing(self, input_string):
-        # Put the for below in a while
-
         run_loop, times_ran = True, 0
         while run_loop:
             dict_of_indexes_of_vars = self.create_dict_of_vars_to_indexes(input_string)
@@ -138,6 +167,7 @@ class VariableSolver:
             
                 temp_input_right_num = re.sub(r'[a-zA-Z]+', '1', temp_input[val[1][0]])
                 #temp_inpt_right_num = "".join(gets_rid_of_useless_multiplication(temp_inpt_right_num))
+                
                 temp_input_right_num = float(temp_input_calc_obj.calculation(temp_input_right_num, False))
                 
                 result = temp_input_left_num + temp_input_right_num
@@ -199,27 +229,31 @@ class VariableSolver:
         input_string = self.simplify_variable_term_exponents_into_multiplication(input_string)
         input_string = self.regex_correction_for_terms(input_string)
         input_string = self.get_rid_of_useless_multi(input_string)
+        
+        input_string = self.split_input_str_into_list(input_string)
+        list_of_info = []
+        for index, term in enumerate(input_string):
+            num_of_var = len([x for x in term if x.isalpha() and x != '+'])
+            list_of_info.append((num_of_var, index)) 
+            
+        input_string = [x for x in list(map(lambda x: input_string[x[1]]+'+', sorted(list_of_info)[::-1]))]
+        print(input_string, 'this is input_string')
+        input_string = self.get_rid_of_useless_multi(input_string)
         input_string = self.variable_term_into_exponents(input_string)
         input_string = re.sub(r'\*([a-zA-Z])', '\g<1>', input_string)
         input_string = re.sub(r'(\d)\.0', '\g<1>', input_string)
         input_string = re.sub(r'([^\d]|^)1([a-zA-Z]+)', '\g<1>\g<2>', input_string)
-        input_string = re.sub(r'^\+|\+$', '', input_string)
+        input_string = re.sub(r'(\+)+$', '', input_string)
+        input_string = re.sub(r'^\++', '', input_string)
         input_string = re.sub(r'\+\-1\*', '-', input_string)
         input_string = re.sub(r'([a-zA-Z])\^\(1\)', '\g<1>', input_string)
+        input_string = re.sub(r'\++', '+',input_string)
+        input_string = self.split_input_str_into_list(input_string)
         
-        sum_of_vars = []
-        for term in self.split_input_str_into_list(self.simplify_variable_term_exponents_into_multiplication(input_string)):
-            list_of_vars = re.findall(r'[a-zA-Z]', term)
-            print(term, list_of_vars)
-            if list_of_vars:
-                set_of_vars = set(list_of_vars)
-                sum_of_vars.append(sum(list(map(lambda x: ''.join(list_of_vars).count(x), set_of_vars))))
-        print(sum_of_vars, 'sum of vars')
-            
         return input_string
 
 def main():
-    var =  VariableSolver('(3+2y)y')
+    var =  VariableSolver('2+4y+3w^24+3x^6')
     print('input:', var.input_str)
     var.input_str = var.simplify_variable_term_exponents_into_multiplication(var.input_str)
     print('after to multi:', var.input_str)
@@ -237,38 +271,15 @@ def main():
 if __name__ == '__main__': main()
 
 '''
-
-    INPUT REQS:
-        EXPONENTS NEED TO BE IN PARANTHESIS
-
-    for some reason 
-        x+y+y^(2)+y^(2)+y^(2)
-            does not get completely simplified but it is right 
+    STUFF TO DO:
+        Division support
+        Paranthesis support if vars in parans
+        
+        in each term, apply the exponent prioritization.
+        
+        Input that doesnt work randomly:
+            3yy+2x^(2)+3x+5y+5y
+            there is a chance that it does work, but there is also a chance it does not. I blame dictionarys inherent randomness. last edit at ln 185
     
 WORKKING AT 240
-
-
-
-things that do not currently work:
-    division
-    does not do variables in ascending order
-    make regex_correction do x^2+23d^2 --> x^(2+23d^2)
-    variable paranthesis --> (3+y)y does not work
-    
-'''
-
-'''
-    AS FAR AS INPUT GOES:
-        EXPONENTS NEED TO BE IN PARANTHESIS, SO IT DOES NOT SPLIT ON PLUSSES
-
-
-    I BELIEVE IT IS MOSTLY FUNCTOINAL
-    
-    2/x simplifies to 2x this is not correct obviously
-
-    simplifying variable terms into exponents does NOT work as of 3:53 5/2/19
-
-    try (3+2)y
-        it splits on pluses, but it really should only split if there are NO UNresolved parans
-    
 '''
