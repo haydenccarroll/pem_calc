@@ -1,6 +1,8 @@
 from tkinter import *
 import calculation
+import fractions
 
+the_calculator = calculation.Calculator("")
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -8,11 +10,11 @@ class Window(Frame):
         Frame.__init__(self, master)
         self.is_second = False
 
-    def create_widgets(self, *refresh_inp):
-        if refresh_inp == (False,):
+    def create_widgets(self, *refresh_input):
+        if refresh_input == (False,):
             pass
         else:
-            refresh_inp = True
+            refresh_input = True
         self.master.title("PFEiMDAS Calculator")
         self.master.columnconfigure(0, weight=1)
         self.master.columnconfigure(1, weight=1)
@@ -95,8 +97,6 @@ class Window(Frame):
                          command=lambda: self.button_command('ln('))
             graph = Button(self.master, text=' 2nd  ', bg='gray', fg='white',
                            command=lambda: self.inverse_second_var())
-            d_to_f = Button(self.master, text='F->D ', bg='gray', fg='white',
-                            command=lambda: self.refresh_input_box())
         else:
 
             seven = Button(self.master, text='  7   ', command=lambda:
@@ -157,9 +157,9 @@ class Window(Frame):
                          self.button_command('log('))
             graph = Button(self.master, text=' 2nd  ', command=lambda:
                            self.inverse_second_var())
-            d_to_f = Button(self.master, text='D->F ', command=lambda:
+            d_to_f = Button(self.master, text='D<->F ', command=lambda:
                             self.d_to_f())
-        if refresh_inp != (False,):
+        if refresh_input != (False,):
             self.input_box = Entry(self.master, font=("Calibri 15"))
         self.input_box.grid(row=0, column=0, sticky='nesw', columnspan=6)
         seven.grid(row=1, column=0, sticky='nesw')
@@ -198,9 +198,9 @@ class Window(Frame):
         self.create_widgets(False)
 
     def refresh_input_box(self):
-        result = calculation.Evaluator(self.input_box.get())
-        the_result = result.calculation(self.input_box.get(), False)
-
+        result = calculation.Calculator(self.input_box.get())
+        result.calculation(print_bool=False)
+        the_result = result.input
         if self.is_second:
             self.inverse_second_var()
         self.input_box.delete(0, 'end')
@@ -219,10 +219,16 @@ class Window(Frame):
         self.input_box.delete(len(self.input_box.get())-1, 'end')
 
     def d_to_f(self):
-        result = calculation.Evaluator(self.input_box.get())
+
         try:
-            the_result = result.decimal_to_fraction(self.input_box.get())
-        except:
+            if '/' in self.input_box.get():
+                decimal_calc = calculation.Calculator(self.input_box.get())
+                decimal_calc.calculation(print_bool=False)
+                the_result = decimal_calc.input
+            else:
+                the_result = fractions.Fraction(self.input_box.get()).limit_denominator()
+        except Exception as e:
+            print(e)
             the_result = 'Error'
         self.input_box.delete(0, 'end')
         self.input_box.insert(0, the_result)

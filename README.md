@@ -1,4 +1,5 @@
 # PFEiMDAS_calculator
-This is a a calculator created in python 3.x, which utilizes the PFEiMDAS order of operations.
-Parenthesis, Functions, Exponents, (implicit multiplication), Multiplication and Division, Addition and Subtraction
-Has this been commited?
+This is a fully-functional calculator created in Python 3 with tkinter. it has no modules, besides tkinter and re. All mathematical operations is done in calculation.py, while the "input cleaner" tasks are completed in calc_input_cleaner.py. Below is a list and description of all the functions in the Calculation class.
+
+__init__(self, user_input)
+    This function is the builtin __init__, and takes in user input. Besides this, it creates some object variables that are used in other functions. The following variables are self.input, (which is the list of characters that gets calculated on), self.message_functs, (a 2d list with function names and output message strings that is used for self.calculation()), self.PI (a constant that gets used particularly in trig functions), 
