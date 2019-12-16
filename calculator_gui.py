@@ -97,8 +97,6 @@ class Window(Frame):
                          command=lambda: self.button_command('ln('))
             graph = Button(self.master, text=' 2nd  ', bg='gray', fg='white',
                            command=lambda: self.inverse_second_var())
-            d_to_f = Button(self.master, text='F->D ', bg='gray', fg='white',
-                            command=lambda: self.refresh_input_box())
         else:
 
             seven = Button(self.master, text='  7   ', command=lambda:
@@ -159,7 +157,7 @@ class Window(Frame):
                          self.button_command('log('))
             graph = Button(self.master, text=' 2nd  ', command=lambda:
                            self.inverse_second_var())
-            d_to_f = Button(self.master, text='D->F ', command=lambda:
+            d_to_f = Button(self.master, text='D<->F ', command=lambda:
                             self.d_to_f())
         if refresh_input != (False,):
             self.input_box = Entry(self.master, font=("Calibri 15"))
