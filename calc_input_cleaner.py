@@ -18,7 +18,6 @@ def define_lists(the_input):
         return regex_list
 
 
-
 def is_nested_list_empty(the_list):
         return all(map(is_nested_list_empty, the_list)) \
                if isinstance(the_list, list) else False
