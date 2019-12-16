@@ -20,6 +20,12 @@ class Calculator:
                                    '`': 'COS',
                                    '_': 'TAN'}
         self.input = list(user_input)
+        self.message_functs = [['Absolute Value Output: ', self.abs_val_calc], ['Paranthesis Output: ', self.paran_calc],
+                              ['Factorial Output: ', self.factorial_calc], ['Sine Output: ', self.sin_calc], ['Cosine Output: ', self.cos_calc],
+                              ['Tangent Output: ', self.tan_calc], ['Logaritm Output: ', self.log_calc], ['Square Root Output: ', self.square_root_calc],
+                              ['Exponent Output: ', self.exponent_calc], ['Multiplication Output: ', self.multiplication_calc],
+                              ['Division Output: ', self.division_calc], ['Addition/Subtraction Output: ', self.addition_subtraction_calc]]
+
 
     # replaces list by consecutive indexes, eg. (['12', '+', '2'], 14.0, [0,2]) -> [14.0]
     def replace_list(self, replacement, indexes_to_replace):
@@ -142,7 +148,9 @@ class Calculator:
                                         ['LPARAN'][num_of_nested_lparan]+1:
                                         right_paran_place]
 
-                    temp_input = self.calculation(temp_input, print_bool=False)
+                    paran_calculator_object = Calculator(temp_input)
+                    paran_calculator_object.calculation(print_bool=False)
+                    temp_input = paran_calculator_object.input
                     left_paran = self.determine_which_operation()['LPARAN'] \
                         [num_of_nested_lparan]
                     self.replace_list(str(temp_input),
@@ -162,8 +170,19 @@ class Calculator:
 
 
     # calculates all sine functions
-    def sin_calc(self):
+    def sin_calc(self, alt_input=None):
         indexes = self.determine_which_operation()
+        if alt_input is not None:
+            alt_input = float(alt_input)*self.PI/180
+            alt_input = alt_input - (alt_input**3/(3*2)) + (alt_input**5/(5*4*3*2)) - \
+                    (alt_input**7/(7*6*5*4*3*2)) + (alt_input**9/(9*8*7*6*5*4*3*2)) \
+                    - (alt_input**11/(11*10*9*8*7*6*5*4*3*2)) + \
+                    (alt_input**13/(13*12*11*10*9*8*7*6*5*4*3*2)) - \
+                    (alt_input**15/(15*14*13*12*11*10*9*8*7*6*5*4*3*2)) + \
+                    (alt_input**17/(17*16*15*14*13*12*11*10*9*8*7*6*5*4*3*2))
+            alt_input = round(alt_input, 10)
+            return alt_input
+
         while indexes['SIN']:
             for i in indexes['SIN']:
                 answer = float(self.input[i+1])*self.PI/180
@@ -175,11 +194,23 @@ class Calculator:
                     (answer**17/(17*16*15*14*13*12*11*10*9*8*7*6*5*4*3*2))
                 answer = round(answer, 10)
                 self.input[i+1] = answer #can maybe use replace function
-                del self.input[i] 
+                del self.input[i]
+            indexes = self.determine_which_operation() 
 
 
     # calculates all cosine functions # need to do nochangeunput bool
-    def cos_calc(self):
+    def cos_calc(self, alt_input=None):
+        if alt_input is not None:
+            alt_input = float(alt_input)*self.PI/180
+            alt_input = 1 - (alt_input**2/(2)) + (alt_input**4/(4*3*2)) - \
+                    (alt_input**6/(6*5*4*3*2)) + (alt_input**8/(8*7*6*5*4*3*2)) - \
+                    (alt_input**10/(10*9*8*7*6*5*4*3*2)) + \
+                    (alt_input**12/(12*11*10*9*8*7*6*5*4*3*2)) - \
+                    (alt_input**14/(14*13*12*11*10*9*8*7*6*5*4*3*2)) + \
+                    (alt_input**16/(16*15*14*13*12*11*10*9*8*7*6*5*4*3*2))
+            alt_input = round(alt_input, 10)
+            return alt_input
+
         indexes = self.determine_which_operation()
         while indexes['COS']:
             for i in indexes['COS']:
@@ -193,6 +224,7 @@ class Calculator:
                 answer = round(answer, 10)
                 self.input[i+1] = answer
                 del self.input[i]
+            indexes = self.determine_which_operation()
 
 
     # calculates all tangent functions in a string
@@ -200,10 +232,10 @@ class Calculator:
         indexes = self.determine_which_operation()
         while indexes['TAN']:
             for i in indexes['TAN']:
-                answer = self.sin_calc(float(self.input[i+1]), change_input=False) / \
-                    self.cos_calc(float(self.input[i+1]), change_input=False)
+                answer = self.sin_calc(alt_input=float(self.input[i+1])) / self.cos_calc(alt_input=float(self.input[i+1]))
                 self.input[i+1] = answer
                 del self.input[i]
+            indexes = self.determine_which_operation()
 
 
     # calculates all logs (base 10 only)
@@ -273,34 +305,19 @@ class Calculator:
 
 
     # calls all functions in proper order
-    def calculation(self, print_bool=True):
-        self.stage('Input Correction Output: ',
-                        clean_input, print_bool, (self.input))
-        self.stage('Absolute Value Output: ',
-            self.abs_val_calc, print_bool)
-        self.stage('Paranthesis Output: ',
-            self.paran_calc, print_bool)
-        self.stage('Factorial Output: ',
-            self.factorial_calc, print_bool)
-        self.stage('Sine Output: ', self.sin_calc, print_bool)
-        self.stage('Cosine Output: ', self.cos_calc, print_bool)
-        self.stage('Tangent Output: ', self.tan_calc, print_bool)
-        self.stage('Logarithm Output: ', self.log_calc, print_bool)
-        self.stage('Square Root Output: ',
-            self.square_root_calc, print_bool)
-        self.stage('Exponent Output: ',
-            self.exponent_calc, print_bool)
-        self.stage('Multiplication Output: ',
-            self.multiplication_calc, print_bool)
-        self.stage('Division Output: ',
-            self.division_calc, print_bool)
-        self.stage('Addition/Subtraction Output: ',
-                        self.addition_subtraction_calc, print_bool)
+    def calculation(self, print_bool=True, return_val=False):
+
+        self.stage('Input Correction Output: ', clean_input, print_bool, (self.input))
+        for message, funct in self.message_functs:
+            self.stage(message, funct, print_bool)
 
         if float(self.input[0]) % 1 == 0: #if an integer
             self.input = int(float(self.input[0]))
         else:
             self.input = float(self.input[0])
+
+        if return_val:
+            pass
 
 
 # main function, thats called when it is the file opened.
@@ -324,9 +341,8 @@ def main():
 if __name__ == '__main__':
     main()
 
-# two paranthesis () causes an error, so in my new way of abs_val,
-    # so would ||-2|+2|
+#messes up when it goes in e form
+#cannot do nested abs vals
 
-# implement a universal "which one first" functoin so i can seperate m and d,
-# and use it for all functions, and then abs val and parans
-# seperate multiplication and division
+
+#could potentially capitalize on a/b == a*(1/b)
