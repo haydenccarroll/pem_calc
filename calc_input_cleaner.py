@@ -1,5 +1,5 @@
 import re
-PI = 3.1415926535897932384626433832795
+PI = 3.1415926535897932384626433832795028841971
 def define_lists(the_input):
         the_input = "".join([str(x) for x in the_input])
         regex_list = []
