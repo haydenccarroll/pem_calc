@@ -20,7 +20,8 @@ class Calculator:
                                    '`': 'COS',
                                    '_': 'TAN'}
         self.input = list(user_input)
-        self.message_functs = [['Absolute Value Output: ', self.abs_val_calc], ['Paranthesis Output: ', self.paran_calc],
+        self.operator_indexes = dict()
+        self.MESSAGE_TO_FUNCTS = [['Absolute Value Output: ', self.abs_val_calc], ['Paranthesis Output: ', self.paran_calc],
                               ['Factorial Output: ', self.factorial_calc], ['Sine Output: ', self.sin_calc], ['Cosine Output: ', self.cos_calc],
                               ['Tangent Output: ', self.tan_calc], ['Logaritm Output: ', self.log_calc], ['Square Root Output: ', self.square_root_calc],
                               ['Exponent Output: ', self.exponent_calc], ['Multiplication Output: ', self.multiplication_calc],
@@ -44,42 +45,40 @@ class Calculator:
 
     # returns dictionary of all indexes of the operators eg. {'MULTIPLY': [1], "DIVISION": [3, 5], "ADDITION": []}
     def determine_which_operation(self):
-        indexes_of_operators = {self.DICT_OF_OPERATORS[symbol]:
+        self.operator_indexes = {self.DICT_OF_OPERATORS[symbol]:
                                 [int(i) for i, x in enumerate(self.input)
                                 if x == symbol] for symbol in r"*/+()^|&!@#`_"}
-        return indexes_of_operators
 
 
     # carries out operations based off of the operator, and the index of the operator, and the input
     def emda_calc_and_substitute(self, operator_index,
                                 index_in_operator_index, operator):
-        indexes = self.determine_which_operation()
+        self.determine_which_operation()
         if operator == '^':
-            temp_output = float(self.input[indexes[operator_index]
+            temp_output = float(self.input[self.operator_indexes[operator_index]
                                 [index_in_operator_index]-1]) \
-                                ** float(self.input[indexes[operator_index]
+                                ** float(self.input[self.operator_indexes[operator_index]
                                         [index_in_operator_index]+1])
         elif operator == '*':
-            temp_output = float(self.input[indexes[operator_index]
+            temp_output = float(self.input[self.operator_indexes[operator_index]
                                 [index_in_operator_index]-1]) \
-                                * float(self.input[indexes[operator_index]
+                                * float(self.input[self.operator_indexes[operator_index]
                                         [index_in_operator_index]+1])
         elif operator == '/':
-            left_num = float(self.input[indexes[operator_index]
+            left_num = float(self.input[self.operator_indexes[operator_index]
                                     [index_in_operator_index]-1])
-            right_num = float(self.input[indexes[operator_index]
+            right_num = float(self.input[self.operator_indexes[operator_index]
                                         [index_in_operator_index]+1])
             temp_output = left_num / right_num
         elif operator == '+':
-            left_num = float(self.input[indexes[operator_index]
+            left_num = float(self.input[self.operator_indexes[operator_index]
                                             [index_in_operator_index]-1])
-            right_num = float(self.input[indexes[operator_index]
+            right_num = float(self.input[self.operator_indexes[operator_index]
                                             [index_in_operator_index]+1])
             temp_output = left_num + right_num
 
-        left_index = indexes[operator_index][index_in_operator_index]-1
-        right_index = indexes[operator_index][index_in_operator_index]+1
-        #print(temp_output, 'emda', [left_index, right_index])
+        left_index = self.operator_indexes[operator_index][index_in_operator_index]-1
+        right_index = self.operator_indexes[operator_index][index_in_operator_index]+1
         self.replace_list(temp_output, [left_index, right_index])
 
 
@@ -97,7 +96,8 @@ class Calculator:
     # calculates all absolute values
     def add_parens_for_abs_val(self):
         characters_inserted = 0
-        indexes = self.determine_which_operation()["ABS_VAL"]
+        self.determine_which_operation()
+        indexes = self.operator_indexes["ABS_VAL"]
         for i in range(len(indexes)):
             if i % 2 == 0:
                 self.input.insert(indexes[i]+1+characters_inserted, '(')  # makes |(
@@ -107,40 +107,42 @@ class Calculator:
 
 
     def abs_val_calc(self):
-        if not self.determine_which_operation()['ABS_VAL']:
+        self.determine_which_operation()
+        if not self.operator_indexes['ABS_VAL']:
             return
         self.add_parens_for_abs_val()
         self.paran_calc()
-        while self.determine_which_operation()['ABS_VAL']:
-            first_abs = self.determine_which_operation()['ABS_VAL'][0]
-            second_abs = self.determine_which_operation()['ABS_VAL'][1]
+        self.determine_which_operation()
+        while self.operator_indexes['ABS_VAL']:
+            first_abs = self.operator_indexes['ABS_VAL'][0]
+            second_abs = self.operator_indexes['ABS_VAL'][1]
             inside_abs = float("".join(self.input[first_abs+1:second_abs]))
             inside_abs = (inside_abs**2)**0.5
             self.replace_list(inside_abs, [first_abs, second_abs])
+            self.determine_which_operation()
 
 
     # evaluates paranthesis, including nested ones
     def paran_calc(self):
         temp_input = ''
         self.seperate_by_operators()
-        while self.determine_which_operation()['LPARAN']:
+        self.determine_which_operation()
+        while self.operator_indexes['LPARAN']:
             num_of_nested_lparan, num_of_nested_rparan = -1, -1
-            for i in enumerate(self.input[self.determine_which_operation()
-                                        ['LPARAN'][0]:]):
+            for i in enumerate(self.input[self.operator_indexes['LPARAN'][0]:]): #can looping through a changing dict cause problems? probaly not in this case
                 if i[1] == '(':
                     num_of_nested_lparan += 1
                 elif i[1] == ')':
                     num_of_nested_rparan += 1
-                elif len(self.input)-1-i[0] == self.determine_which_operation(
-                                                )['LPARAN'][0]:
+                elif len(self.input)-1-i[0] == self.operator_indexes['LPARAN'][0]:
                     while num_of_nested_lparan != num_of_nested_rparan:
                         self.input.append(')')
+                        self.determine_which_operation()
                         num_of_nested_rparan += 1
 
                 if num_of_nested_rparan == num_of_nested_lparan:
-                    for z in self.determine_which_operation()['RPARAN']:
-                        if z > self.determine_which_operation()['LPARAN'][
-                                                            num_of_nested_lparan]:
+                    for z in self.operator_indexes['RPARAN']:
+                        if z > self.operator_indexes['LPARAN'][num_of_nested_lparan]:
                             right_paran_place = z
                             break
 
@@ -308,7 +310,7 @@ class Calculator:
     def calculation(self, print_bool=True, return_val=False):
 
         self.stage('Input Correction Output: ', clean_input, print_bool, (self.input))
-        for message, funct in self.message_functs:
+        for message, funct in self.MESSAGE_TO_FUNCTS:
             self.stage(message, funct, print_bool)
 
         if float(self.input[0]) % 1 == 0: #if an integer
