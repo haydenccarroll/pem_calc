@@ -97,13 +97,16 @@ class Calculator:
     def add_parens_for_abs_val(self):
         characters_inserted = 0
         self.determine_which_operation()
-        indexes = self.operator_indexes["ABS_VAL"]
         for i in range(len(indexes)):
+            indexes = self.operator_indexes["ABS_VAL"]
             if i % 2 == 0:
                 self.input.insert(indexes[i]+1+characters_inserted, '(')  # makes |(
             else:
                 self.input.insert(indexes[i]+characters_inserted, ')')  # makes )|
             characters_inserted += 1
+            self.determine_which_operation()
+
+            
 
 
     def abs_val_calc(self):
@@ -146,34 +149,38 @@ class Calculator:
                             right_paran_place = z
                             break
 
-                    temp_input = self.input[self.determine_which_operation()
+                    temp_input = self.input[self.operator_indexes
                                         ['LPARAN'][num_of_nested_lparan]+1:
                                         right_paran_place]
 
                     paran_calculator_object = Calculator(temp_input)
                     paran_calculator_object.calculation(print_bool=False)
                     temp_input = paran_calculator_object.input
-                    left_paran = self.determine_which_operation()['LPARAN'] \
+                    left_paran = self.operator_indexes['LPARAN'] \
                         [num_of_nested_lparan]
                     self.replace_list(str(temp_input),
                                 [left_paran, right_paran_place])
+                    self.determine_which_operation()
+
                     break
 
 
     # calculates all factorials
     def factorial_calc(self):
-        for i in self.determine_which_operation()['FACTORIAL']:
+        self.determine_which_operation()
+        for i in self.operator_indexes['FACTORIAL']:
             num_to_factorial = int(self.input[i-1])
             current_product = 1
             for z in range(1, num_to_factorial+1):
                 current_product *= z
             self.input[i-1] = current_product
             del self.input[i]
+            self.determine_which_operation()
 
 
     # calculates all sine functions
     def sin_calc(self, alt_input=None):
-        indexes = self.determine_which_operation()
+        self.determine_which_operation()
         if alt_input is not None:
             alt_input = float(alt_input)*self.PI/180
             alt_input = alt_input - (alt_input**3/(3*2)) + (alt_input**5/(5*4*3*2)) - \
@@ -185,8 +192,8 @@ class Calculator:
             alt_input = round(alt_input, 10)
             return alt_input
 
-        while indexes['SIN']:
-            for i in indexes['SIN']:
+        while self.operator_indexes['SIN']:
+            for i in self.operator_indexes['SIN']:
                 answer = float(self.input[i+1])*self.PI/180
                 answer = answer - (answer**3/(3*2)) + (answer**5/(5*4*3*2)) - \
                     (answer**7/(7*6*5*4*3*2)) + (answer**9/(9*8*7*6*5*4*3*2)) \
@@ -197,7 +204,7 @@ class Calculator:
                 answer = round(answer, 10)
                 self.input[i+1] = answer #can maybe use replace function
                 del self.input[i]
-            indexes = self.determine_which_operation() 
+                self.determine_which_operation() 
 
 
     # calculates all cosine functions # need to do nochangeunput bool
@@ -213,9 +220,10 @@ class Calculator:
             alt_input = round(alt_input, 10)
             return alt_input
 
-        indexes = self.determine_which_operation()
-        while indexes['COS']:
-            for i in indexes['COS']:
+        self.determine_which_operation()
+        
+        while self.operator_indexes['COS']:
+            for i in self.operator_indexes['COS']:
                 answer = float(self.input[i+1])*self.PI/180
                 answer = 1 - (answer**2/(2)) + (answer**4/(4*3*2)) - \
                     (answer**6/(6*5*4*3*2)) + (answer**8/(8*7*6*5*4*3*2)) - \
@@ -226,23 +234,23 @@ class Calculator:
                 answer = round(answer, 10)
                 self.input[i+1] = answer
                 del self.input[i]
-            indexes = self.determine_which_operation()
+                self.determine_which_operation()
 
 
     # calculates all tangent functions in a string
     def tan_calc(self):
-        indexes = self.determine_which_operation()
-        while indexes['TAN']:
-            for i in indexes['TAN']:
+        self.determine_which_operation()
+        while self.operator_indexes['TAN']:
+            for i in self.operator_indexes['TAN']:
                 answer = self.sin_calc(alt_input=float(self.input[i+1])) / self.cos_calc(alt_input=float(self.input[i+1]))
                 self.input[i+1] = answer
                 del self.input[i]
-            indexes = self.determine_which_operation()
+                self.determine_which_operation()
 
 
     # calculates all logs (base 10 only)
     def log_calc(self):
-        indexes = self.determine_which_operation()
+        self.determine_which_operation()
 
         def find_log(to_log):
             guess_log = 1
@@ -261,49 +269,57 @@ class Calculator:
                         guess_log += 1
                 z += 1.5
             return 'Undefined'
-        while indexes['LOG']:
-            for i in indexes['LOG']:
+        while self.operator_indexes['LOG']:
+            for i in self.operator_indexes['LOG']:
                 answer = find_log(float(self.input[i+1]))
                 self.input[i+1] = answer
                 del self.input[i]
-                indexes = self.determine_which_operation()
+                self.determine_which_operation()
 
 
     # calculates square roots
     def square_root_calc(self):
-        indexes = self.determine_which_operation()
-        while indexes['SQUARE_ROOT']:
-            if indexes['RPARAN']:
-                end_of_sqroot = [x for x in indexes['RPARAN']
-                                if x > indexes['SQUARE_ROOT'][0]][0]
-                temp_output = self.input[indexes['SQUARE_ROOT'][0]+1:end_of_sqroot]
-                del self.input[indexes['SQUARE_ROOT'][0]:end_of_sqroot+1]
+        self.determine_which_operation()
+        while self.operator_indexes['SQUARE_ROOT']:
+            if self.operator_indexes['RPARAN']:
+                end_of_sqroot = [x for x in self.operator_indexes['RPARAN']
+                                if x > self.operator_indexes['SQUARE_ROOT'][0]][0]
+                temp_output = self.input[self.operator_indexes['SQUARE_ROOT'][0]+1:end_of_sqroot]
+                del self.input[self.operator_indexes['SQUARE_ROOT'][0]:end_of_sqroot+1]
             else:
-                temp_output = self.input[indexes['SQUARE_ROOT'][0]+1::]
-                del self.input[indexes['SQUARE_ROOT'][0]::]
+                temp_output = self.input[self.operator_indexes['SQUARE_ROOT'][0]+1::]
+                del self.input[self.operator_indexes['SQUARE_ROOT'][0]::]
             temp_output = float(self.calculation(temp_output, False))**0.5
-            self.input.insert(indexes['SQUARE_ROOT'][0], temp_output)
-            indexes = self.determine_which_operation()
+            self.input.insert(self.operator_indexes['SQUARE_ROOT'][0], temp_output)
+            self.determine_which_operation()
 
 
     # calculates all exponent operations
     def exponent_calc(self):
-        while self.determine_which_operation()['EXPONENT']:
+        self.determine_which_operation()
+        while self.operator_indexes['EXPONENT']:
             self.emda_calc_and_substitute('EXPONENT', -1, '^')
+            self.determine_which_operation()
 
     def multiplication_calc(self):
-        while self.determine_which_operation()['MULTIPLY']:
+        self.determine_which_operation()
+        while self.operator_indexes['MULTIPLY']:
             self.emda_calc_and_substitute('MULTIPLY', 0, '*')
+            self.determine_which_operation()
 
 
     def division_calc(self):
-        while self.determine_which_operation()['DIVIDE']:
+        self.determine_which_operation()
+        while self.operator_indexes['DIVIDE']:
             self.emda_calc_and_substitute('DIVIDE', 0, '/')
+            self.determine_which_operation()
 
 
     def addition_subtraction_calc(self):
-        while self.determine_which_operation()['ADD']:
+        self.determine_which_operation()
+        while self.operator_indexes['ADD']:
             self.emda_calc_and_substitute('ADD', 0, '+')
+            self.determine_which_operation()
 
 
     # calls all functions in proper order
@@ -327,8 +343,8 @@ def main():
         import time
         user_input = None
         while user_input != '':
-            time_start = time.time()
             user_input = input("Please enter an expression for me to evaluate: ")
+            time_start = time.time()
             main_calculator = Calculator(user_input)
             main_calculator.calculation()
             print('\nthe final output as a decimal: ',
