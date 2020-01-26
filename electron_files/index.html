@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='main.css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Pemdas Calculator</title>
+  <script>
+
+    var isSecond = 1;
+    function cat_str(string)
+    {
+      input_box.value += string;
+    }
+
+    function del()
+    {
+      input_box.value = input_box.value.slice(0, -1);
+    }
+
+    function clear_input()
+    {
+      input_box.value = '';
+    }
+
+    function second()
+    {
+      if (isSecond == 1)
+      {
+        document.querySelector('#btn1_1').innerHTML = 'sin<sup>-1</sup>';
+        document.querySelector('#btn1_2').innerHTML = 'cos<sup>-1</sup>';
+        document.querySelector('#btn1_3').innerHTML = 'tan<sup>-1</sup>';
+        document.querySelector('#btn1_4').textContent = 'del';
+        document.querySelector('#btn1_5').textContent = 'clear';
+        document.querySelector('#btn2_1').textContent = '1';
+        document.querySelector('#btn2_2').textContent = '2';
+        document.querySelector('#btn2_3').textContent = '3';
+        document.querySelector('#btn2_4').textContent = 'log';
+        document.querySelector('#btn2_5').textContent = 'ln';
+        document.querySelector('#btn3_1').textContent = '4';
+        document.querySelector('#btn3_2').textContent = '5';
+        document.querySelector('#btn3_3').textContent = '6';
+        document.querySelector('#btn3_4').textContent = 'π';
+        document.querySelector('#btn3_5').textContent = 'e';
+        document.querySelector('#btn4_1').textContent = '7';
+        document.querySelector('#btn4_2').textContent = '8';
+        document.querySelector('#btn4_3').textContent = '9';
+        document.querySelector('#btn4_4').textContent = 'F<->D';
+        document.querySelector('#btn4_5').textContent = '√';
+        document.querySelector('#btn5_1').textContent = '0';
+        document.querySelector('#btn5_2').textContent = '.';
+        document.querySelector('#btn5_3').textContent = '^';
+        document.querySelector('#btn5_4').textContent = '2nd';
+        document.querySelector('#btn5_5').textContent = '=';
+
+        document.querySelector('#btn1_1').setAttribute("onclick", "javascript:cat_str('arcsin(');");
+        document.querySelector('#btn1_2').setAttribute("onclick", "javascript:cat_str('arccos(');");
+        document.querySelector('#btn1_3').setAttribute("onclick", "javascript:cat_str('arctan(');");
+        document.querySelector('#btn1_4').setAttribute("onclick", "javascript:del();");
+        document.querySelector('#btn1_5').setAttribute("onclick", "javascript:clear_input();");
+        document.querySelector('#btn2_1').setAttribute("onclick", "javascript:cat_str('1');");
+        document.querySelector('#btn2_2').setAttribute("onclick", "javascript:cat_str('2');");
+        document.querySelector('#btn2_3').setAttribute("onclick", "javascript:cat_str('3');");
+        document.querySelector('#btn2_4').setAttribute("onclick", "javascript:cat_str('log(');");
+        document.querySelector('#btn2_5').setAttribute("onclick", "javascript:cat_str('ln(');");
+        document.querySelector('#btn3_1').setAttribute("onclick", "javascript:cat_str('4');");
+        document.querySelector('#btn3_2').setAttribute("onclick", "javascript:cat_str('5');");
+        document.querySelector('#btn3_3').setAttribute("onclick", "javascript:cat_str('6');");
+        document.querySelector('#btn3_4').setAttribute("onclick", "javascript:cat_str('π');");
+        document.querySelector('#btn3_5').setAttribute("onclick", "javascript:cat_str('e');");
+        document.querySelector('#btn4_1').setAttribute("onclick", "javascript:cat_str('7');");
+        document.querySelector('#btn4_2').setAttribute("onclick", "javascript:cat_str('8');");
+        document.querySelector('#btn4_3').setAttribute("onclick", "javascript:cat_str('9');");
+        document.querySelector('#btn4_4').setAttribute("onclick", "javascript:f_to_d();");
+        document.querySelector('#btn4_5').setAttribute("onclick", "javascript:cat_str('√');");
+        document.querySelector('#btn5_1').setAttribute("onclick", "javascript:cat_str('0');");
+        document.querySelector('#btn5_2').setAttribute("onclick", "javascript:cat_str('.');");
+        document.querySelector('#btn5_3').setAttribute("onclick", "javascript:cat_str('^');");
+        document.querySelector('#btn5_4').setAttribute("onclick", "javascript:second();");
+        document.querySelector('#btn5_5').setAttribute("onclick", "javascript:evaluate_input();");
+        document.getElementById("btn5_4").style.backgroundColor = "#141615";
+      }
+      else 
+      {
+        document.querySelector('#btn1_1').textContent = 'sin';
+        document.querySelector('#btn1_2').textContent = 'cos';
+        document.querySelector('#btn1_3').textContent = 'tan';
+        document.querySelector('#btn1_4').textContent = 'del';
+        document.querySelector('#btn1_5').textContent = 'clear';
+        document.querySelector('#btn2_1').textContent = '1';
+        document.querySelector('#btn2_2').textContent = '2';
+        document.querySelector('#btn2_3').textContent = '3';
+        document.querySelector('#btn2_4').textContent = '(';
+        document.querySelector('#btn2_5').textContent = ')';
+        document.querySelector('#btn3_1').textContent = '4';
+        document.querySelector('#btn3_2').textContent = '5';
+        document.querySelector('#btn3_3').textContent = '6';
+        document.querySelector('#btn3_4').textContent = '*';
+        document.querySelector('#btn3_5').textContent = '+';
+        document.querySelector('#btn4_1').textContent = '7';
+        document.querySelector('#btn4_2').textContent = '8';
+        document.querySelector('#btn4_3').textContent = '9';
+        document.querySelector('#btn4_4').textContent = '/';
+        document.querySelector('#btn4_5').textContent = '-';
+        document.querySelector('#btn5_1').textContent = '0';
+        document.querySelector('#btn5_2').textContent = '.';
+        document.querySelector('#btn5_3').textContent = '^';
+        document.querySelector('#btn5_4').textContent = '2nd';
+        document.querySelector('#btn5_5').textContent = '=';
+
+        document.querySelector('#btn1_1').setAttribute("onclick", "javascript:cat_str('sin(');");
+        document.querySelector('#btn1_2').setAttribute("onclick", "javascript:cat_str('cos(');");
+        document.querySelector('#btn1_3').setAttribute("onclick", "javascript:cat_str('tan(');");
+        document.querySelector('#btn1_4').setAttribute("onclick", "javascript:del();");
+        document.querySelector('#btn1_5').setAttribute("onclick", "javascript:clear_input();");
+        document.querySelector('#btn2_1').setAttribute("onclick", "javascript:cat_str('1');");
+        document.querySelector('#btn2_2').setAttribute("onclick", "javascript:cat_str('2');");
+        document.querySelector('#btn2_3').setAttribute("onclick", "javascript:cat_str('3');");
+        document.querySelector('#btn2_4').setAttribute("onclick", "javascript:cat_str('(');");
+        document.querySelector('#btn2_5').setAttribute("onclick", "javascript:cat_str(')');");
+        document.querySelector('#btn3_1').setAttribute("onclick", "javascript:cat_str('4');");
+        document.querySelector('#btn3_2').setAttribute("onclick", "javascript:cat_str('5');");
+        document.querySelector('#btn3_3').setAttribute("onclick", "javascript:cat_str('6');");
+        document.querySelector('#btn3_4').setAttribute("onclick", "javascript:cat_str('*');");
+        document.querySelector('#btn3_5').setAttribute("onclick", "javascript:cat_str('+');");
+        document.querySelector('#btn4_1').setAttribute("onclick", "javascript:cat_str('7');");
+        document.querySelector('#btn4_2').setAttribute("onclick", "javascript:cat_str('8');");
+        document.querySelector('#btn4_3').setAttribute("onclick", "javascript:cat_str('9');");
+        document.querySelector('#btn4_4').setAttribute("onclick", "javascript:cat_str('/');");
+        document.querySelector('#btn4_5').setAttribute("onclick", "javascript:cat_str('-');");
+        document.querySelector('#btn5_1').setAttribute("onclick", "javascript:cat_str('0');");
+        document.querySelector('#btn5_2').setAttribute("onclick", "javascript:cat_str('.');");
+        document.querySelector('#btn5_3').setAttribute("onclick", "javascript:cat_str('^');");
+        document.querySelector('#btn5_4').setAttribute("onclick", "javascript:second();");
+        document.querySelector('#btn5_5').setAttribute("onclick", "javascript:evaluate_input();");
+        document.getElementById("btn5_4").style.backgroundColor = "#1d211f";
+
+      }
+
+      isSecond *= -1;
+      
+
+    }
+    
+    function evaluate_input()
+    {
+      var input_string = '"' + document.getElementById("input_box").value + '"';
+      console.log('./calculation.py '+input_string)
+      var python = require('child_process').spawn('python', ['.././calculation.py', input_string]);
+      python.stdout.on('data',function(data){
+        document.getElementById("input_box").value = data.toString('utf8');
+      });
+    }
+
+    setInterval(function(){
+      var focusbox;
+      focusbox = document.getElementById("input_box");
+      focusbox.focus();
+    });
+  </script>
+  </head>
+  <body>
+      <div id='calculator' class='container-fluid'>
+        <div class='h2' id='heading'>
+          <b>Pemdas Calculator</b>
+        </div>
+
+        <div class='row' id='input_box_container'>
+            <input type="text" name="input_box" id='input_box' value=''>
+        </div>
+
+        <div id='all_buttons_div'>
+          <div class='row'>
+            <div class='col col1 col-offset-1 button_div' style="margin:0px">
+              <button type="button"  class='left button' id='btn1_1' onclick='cat_str("sin(")'>sin</button>
+            </div>
+            <div class='col col2 button_div' style="margin:0px 0px 0px 2px">
+              <button type="button"  class='button' id='btn1_2' onclick='cat_str("cos(")'>cos</button>
+            </div>
+            <div class='col col3 button_div' style="margin:0px 0px 0px 2px">
+              <button type="button"  class='button' id='btn1_3' onclick='cat_str("tan(")'>tan</button>
+            </div>
+            <div class='col col4 button_div' style="margin:0px 0px 0px 2px">
+              <button type="button"  class='button' id='btn1_4' onclick='del()'>del</button>
+            </div>
+            <div class='col col5 button_div' style="margin:0px 0px 0px 2px">
+              <button type="button"  class='button' id='btn1_5' onclick='clear_input()'>clear</button>
+            </div>        
+          </div>
+          <div class='row'>
+            <div class='col col1 button_div' style="margin:2px 0px 0px 0px">
+              <button type="button"  class='left button' id='btn2_1' onclick='cat_str("1")'>1</button>
+            </div>
+            <div class='col col2 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn2_2' onclick='cat_str("2")'>2</button>
+            </div>
+            <div class='col col3 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn2_3' onclick='cat_str("3")'>3</button>
+            </div>
+            <div class='col col4 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn2_4' onclick='cat_str("(")'>(</button>
+            </div>
+            <div class='col col5 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn2_5' onclick='cat_str(")")'>)</button>
+            </div>        
+          </div>
+  
+          <div class='row'>
+            <div class='col col1 button_div' style="margin:2px 0px 0px 0px">
+              <button type="button"  class='left button' id='btn3_1' onclick='cat_str("4")'>4</button>
+            </div>
+            <div class='col col2 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn3_2' onclick='cat_str("5")'>5</button>
+            </div>
+            <div class='col col3 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn3_3' onclick='cat_str("6")'>6</button>
+            </div>
+            <div class='col col4 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn3_4' onclick='cat_str("*")'>*</button>
+            </div>
+            <div class='col col5 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn3_5' onclick='cat_str("+")'>+</button>
+            </div>        
+          </div>
+  
+          <div class='row'>
+            <div class='col col1 button_div' style="margin:2px 0px 0px 0px">
+              <button type="button"  class='left button' id='btn4_1' onclick='cat_str("7")'>7</button>
+            </div>
+            <div class='col col2 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn4_2' onclick='cat_str("8")'>8</button>
+            </div>
+            <div class='col col3 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn4_3' onclick='cat_str("9")'>9</button>
+            </div>
+            <div class='col col4 button_div' style="margin:2px 0px 0px 2px" id='btn4_44'>
+              <button type="button"  class='button' id='btn4_4' onclick='cat_str("/")'>/</button>
+            </div>
+            <div class='col col5 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn4_5' onclick='cat_str("-")'>-</button>
+            </div>        
+          </div>
+  
+          <div class='row'>
+            <div class='col col1 button_div' style="margin:2px 0px 0px 0px">
+              <button type="button"  class='left button' id='btn5_1' onclick='cat_str("0")'>0</button>
+            </div>
+            <div class='col col2 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn5_2' onclick='cat_str(".")'>.</button>
+            </div>
+            <div class='col col3 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn5_3' onclick='cat_str("^")'>^</button>
+            </div>
+            <div class='col col4 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn5_4' onclick='second()'>2nd</button>
+            </div>
+            <div class='col col5 button_div' style="margin:2px 0px 0px 2px">
+              <button type="button"  class='button' id='btn5_5' onclick='evaluate_input()'>=</button>
+            </div>        
+          </div>
+        </div>
+        
+
+      </div>
+  </body>
+</html>
