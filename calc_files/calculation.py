@@ -36,18 +36,18 @@ class Calculator:
 
     # redefines the output as a list, seperated by the operators. eg. ['1','1','+','2','2'] -> ['11', '+', '22']
     def seperate_by_operators(self): 
-        self.input = re.split(r'([+*^\/()\|\&\!\@\#\`\_])',
+        self.input = re.split(r'([+*^\/()\|\&\!\@\#\`\_])', # splits input on every operator
                             "".join([str(x) for x in self.input]))
         for x in self.input: # gets rid of nospace characters that may occur due to the re.split
             if x == '':
                 del self.input[self.input.index(x)]
 
 
-    # returns dictionary of all indexes of the operators eg. {'MULTIPLY': [1], "DIVISION": [3, 5], "ADDITION": []}
+    # updates operator_index as dictionary of all indexes of the operators eg. {'MULTIPLY': [1], "DIVISION": [3, 5], "ADDITION": []}
     def determine_which_operation(self):
         self.operator_indexes = {self.DICT_OF_OPERATORS[symbol]:
                                 [int(i) for i, x in enumerate(self.input)
-                                if x == symbol] for symbol in r"*/+()^|&!@#`_"}
+                                if x == symbol] for symbol in r"*/+()^|&!@#`_"} # matches symbol with list of location of symbol
 
 
     # carries out operations based off of the operator, and the index of the operator, and the input
@@ -321,7 +321,6 @@ class Calculator:
             self.emda_calc_and_substitute('ADD', 0, '+')
             self.determine_which_operation()
 
-
     # calls all functions in proper order
     def calculation(self, print_bool=True, return_val=False):
 
@@ -339,7 +338,7 @@ class Calculator:
 
 
 # main function, thats called when it is the file opened.
-def main():
+def from_console():
         import time
         user_input = None
         while user_input != '':
@@ -353,11 +352,19 @@ def main():
                   fractions.Fraction(main_calculator.input).limit_denominator())
 
             time_end = time.time()
-
             print('It took ', round((time_end-time_start)*100000, 2),
                   'microseconds for the program to run!\n\n\n\n')
+def for_electron_calc():
+    import sys
+    try:
+        user_input = sys.argv[1]
+        calculator = Calculator(user_input)
+        calculator.calculation(print_bool=False)
+        print(calculator.input)
+    except:
+        print("Error")
 if __name__ == '__main__':
-    main()
+    for_electron_calc()
 
 #messes up when it goes in e form
 #cannot do nested abs vals
