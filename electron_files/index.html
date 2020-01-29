@@ -72,7 +72,7 @@
         document.querySelector('#btn4_2').setAttribute("onclick", "javascript:cat_str('8');");
         document.querySelector('#btn4_3').setAttribute("onclick", "javascript:cat_str('9');");
         document.querySelector('#btn4_4').setAttribute("onclick", "javascript:f_to_d();");
-        document.querySelector('#btn4_5').setAttribute("onclick", "javascript:cat_str('√');");
+        document.querySelector('#btn4_5').setAttribute("onclick", "javascript:cat_str('√(');");
         document.querySelector('#btn5_1').setAttribute("onclick", "javascript:cat_str('0');");
         document.querySelector('#btn5_2').setAttribute("onclick", "javascript:cat_str('.');");
         document.querySelector('#btn5_3').setAttribute("onclick", "javascript:cat_str('^');");
@@ -144,12 +144,21 @@
     
     function evaluate_input()
     {
-      var input_string = '"' + document.getElementById("input_box").value + '"';
-      console.log('./calculation.py '+input_string)
-      var python = require('child_process').spawn('python', ['.././calculation.py', input_string]);
+      var input_string = document.getElementById("input_box").value;
+      var python = require('child_process').spawn('python', ['../calc_files/./calculation.py', input_string]);
       python.stdout.on('data',function(data){
         document.getElementById("input_box").value = data.toString('utf8');
       });
+    }
+
+    function f_to_d()
+    {
+      var input_string = document.getElementById("input_box").value;
+      var python = require('child_process').spawn('python', ['../calc_files/./f_to_d.py', input_string]);
+      python.stdout.on('data',function(data){
+        document.getElementById("input_box").value = data.toString('utf8');
+      });
+
     }
 
     setInterval(function(){
