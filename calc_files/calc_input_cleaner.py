@@ -3,13 +3,13 @@ PI = 3.1415926535897932384626433832795028841971
 def define_lists(the_input):
         the_input = "".join([str(x) for x in the_input])
         regex_list = []
-        regexes = [r'[^\w\+\)\d\|]\+',
-                   r'[\)\d\π][\(\&\π\@\#\`\_]',
-                   r'[\)\π\!][\d\(\π]', r'[\d\)]-',
+        regexes = [r'[^\w\+\)\|\d\|]\+',
+                   r'[\)\|\d\π][\(\|\&\π\@\#\`\_]',
+                   r'[\)\|\π\!][\d\(\|\π]', r'[\d\)\|]-',
                    r'\+[\-]*\+', r' ',
                    r'^\+',
                    r'(\-[^1])|(\-$)',
-                   r'\&\(', r'\*$',
+                   r'\&\(\|', r'\*$',
                    r'(\d[A-Za-z])|([a-zA-Z]\d)', r'^\*']
         for regex in regexes:
             regex_list.append([x.start(0) for x in

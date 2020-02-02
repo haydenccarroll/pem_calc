@@ -1,4 +1,3 @@
-#NEED OT GET RID OF PARAN FOR ABS VAL, AND FINISH IMPLEMENTING THEM IN CALC_INPUT_CLEANER.py
 import re
 import fractions
 from calc_input_cleaner import clean_input
@@ -82,30 +81,12 @@ class Calculator:
                 print(message, "".join([str(x) for x in self.input]))
 
 
-    # calculates all absolute values
-    def add_parens_for_abs_val(self):
-        characters_inserted = 0
-        self.refresh_operator_indexes()
-        for i in range(len(indexes)):
-            indexes = self.operator_indexes["ABS_VAL"]
-            if i % 2 == 0:
-                self.input.insert(indexes[i]+1+characters_inserted, '(')  # makes |(
-            else:
-                self.input.insert(indexes[i]+characters_inserted, ')')  # makes )|
-            characters_inserted += 1
-            self.refresh_operator_indexes()
-
-
     def abs_val_calc(self):
-        self.refresh_operator_indexes()
-        if not self.operator_indexes['ABS_VAL']:
-            return
-        self.paran_calc()
         self.refresh_operator_indexes()
         while self.operator_indexes['ABS_VAL']:
             first_abs = self.operator_indexes['ABS_VAL'][0]
             second_abs = self.operator_indexes['ABS_VAL'][1]
-            inside_abs = float("".join(self.input[first_abs+1:second_abs]))
+            inside_abs = self.calculation(substr="".join(self.input[first_abs+1:second_abs]))
             inside_abs = (inside_abs**2)**0.5
             self.replace_with_value(inside_abs, [first_abs, second_abs])
             self.refresh_operator_indexes()
