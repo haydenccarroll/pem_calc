@@ -1,3 +1,4 @@
+#NEED OT GET RID OF PARAN FOR ABS VAL, AND FINISH IMPLEMENTING THEM IN CALC_INPUT_CLEANER.py
 import re
 import fractions
 from calc_input_cleaner import clean_input
@@ -51,34 +52,22 @@ class Calculator:
 
 
     # carries out operations based off of the operator, and the index of the operator, and the input
-    def emda_calc_and_substitute(self, operator_index,
-                                index_in_operator_index, operator):
+    def binary_operator_calc_and_sub(self, operator_name, operator_index_in_dict):
         self.refresh_operator_indexes()
-        if operator == '^':
-            temp_output = float(self.input[self.operator_indexes[operator_index]
-                                [index_in_operator_index]-1]) \
-                                ** float(self.input[self.operator_indexes[operator_index]
-                                        [index_in_operator_index]+1])
-        elif operator == '*':
-            temp_output = float(self.input[self.operator_indexes[operator_index]
-                                [index_in_operator_index]-1]) \
-                                * float(self.input[self.operator_indexes[operator_index]
-                                        [index_in_operator_index]+1])
-        elif operator == '/':
-            left_num = float(self.input[self.operator_indexes[operator_index]
-                                    [index_in_operator_index]-1])
-            right_num = float(self.input[self.operator_indexes[operator_index]
-                                        [index_in_operator_index]+1])
-            temp_output = left_num / right_num
-        elif operator == '+':
-            left_num = float(self.input[self.operator_indexes[operator_index]
-                                            [index_in_operator_index]-1])
-            right_num = float(self.input[self.operator_indexes[operator_index]
-                                            [index_in_operator_index]+1])
-            temp_output = left_num + right_num
+        left_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]-1])
+        right_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]+1])
+        left_index = self.operator_indexes[operator_name][operator_index_in_dict]-1
+        right_index = self.operator_indexes[operator_name][operator_index_in_dict]+1
+        
+        if operator_name == 'EXPONENT':
+            temp_output = left_operand ** right_operand
+        if operator_name == 'MULTIPLY':
+            temp_output = left_operand * right_operand
+        elif operator_name == 'DIVIDE':
+            temp_output = left_operand / right_operand
+        elif operator_name == 'ADD':
+            temp_output = left_operand + right_operand
 
-        left_index = self.operator_indexes[operator_index][index_in_operator_index]-1
-        right_index = self.operator_indexes[operator_index][index_in_operator_index]+1
         self.replace_with_value(temp_output, [left_index, right_index])
 
 
@@ -111,7 +100,6 @@ class Calculator:
         self.refresh_operator_indexes()
         if not self.operator_indexes['ABS_VAL']:
             return
-        self.add_parens_for_abs_val()
         self.paran_calc()
         self.refresh_operator_indexes()
         while self.operator_indexes['ABS_VAL']:
@@ -124,7 +112,6 @@ class Calculator:
 
 
     # evaluates paranthesis, including nested ones
-
     def paran_calc(self):
         self.refresh_operator_indexes()
         while self.operator_indexes['LPARAN'] and self.operator_indexes['RPARAN']: #while paranthesis exist
@@ -157,7 +144,7 @@ class Calculator:
             self.refresh_operator_indexes()
             num_to_factorial = int(self.input[i-1])
             current_product = 1
-            for z in range(1, num_to_factorial+1):
+            for z in range(2, num_to_factorial+1):
                 current_product *= z
             self.input[i-1] = current_product
             del self.input[i]
@@ -184,7 +171,7 @@ class Calculator:
 
 
 
-    # calculates all cosine functions # need to do nochangeunput bool
+    # calculates all cosine functions
     def cos_calc(self, alt_input=None):
         if alt_input is not None:
             alt_input = float(alt_input)*self.PI/180
@@ -202,10 +189,6 @@ class Calculator:
                 answer = self.cos_calc(alt_input=self.input[i+1])
                 self.replace_with_value(answer, [i, i+1])
                 self.refresh_operator_indexes() 
-
-
-                
-
 
     # calculates all tangent functions in a string
     def tan_calc(self):
@@ -268,27 +251,28 @@ class Calculator:
     def exponent_calc(self):
         self.refresh_operator_indexes()
         while self.operator_indexes['EXPONENT']:
-            self.emda_calc_and_substitute('EXPONENT', -1, '^')
+            self.binary_operator_calc_and_sub('EXPONENT', -1)
             self.refresh_operator_indexes()
+
 
     def multiplication_calc(self):
         self.refresh_operator_indexes()
         while self.operator_indexes['MULTIPLY']:
-            self.emda_calc_and_substitute('MULTIPLY', 0, '*')
+            self.binary_operator_calc_and_sub('MULTIPLY', 0)
             self.refresh_operator_indexes()
 
 
     def division_calc(self):
         self.refresh_operator_indexes()
         while self.operator_indexes['DIVIDE']:
-            self.emda_calc_and_substitute('DIVIDE', 0, '/')
+            self.binary_operator_calc_and_sub('DIVIDE', 0)
             self.refresh_operator_indexes()
 
 
     def addition_subtraction_calc(self):
         self.refresh_operator_indexes()
         while self.operator_indexes['ADD']:
-            self.emda_calc_and_substitute('ADD', 0, '+')
+            self.binary_operator_calc_and_sub('ADD', 0)
             self.refresh_operator_indexes()
 
     # calls all functions in proper order

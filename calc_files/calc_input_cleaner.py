@@ -23,7 +23,6 @@ def is_nested_list_empty(the_list):
                if isinstance(the_list, list) else False
 
 
-
 # replaces list by consecutive indexes
 def replace_list(input_list, replacement_string, indexes_to_replace):
     if type(input_list) != list:
