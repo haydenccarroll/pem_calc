@@ -21,6 +21,7 @@ class Calculator:
                                    '_': 'TAN'}
         self.input = list(user_input)
         self.operator_indexes = dict()
+        self.operator_symbols = r"*/+()^|&!@#`_"
         self.MESSAGE_TO_FUNCTS = [['Absolute Value Output: ', self.abs_val_calc], ['Paranthesis Output: ', self.paran_calc],
                               ['Factorial Output: ', self.factorial_calc], ['Sine Output: ', self.sin_calc], ['Cosine Output: ', self.cos_calc],
                               ['Tangent Output: ', self.tan_calc], ['Logarithm Output: ', self.log_calc], ['Square Root Output: ', self.square_root_calc],
@@ -36,7 +37,7 @@ class Calculator:
 
     # redefines the output as a list, seperated by the operators. eg. ['1','1','+','2','2'] -> ['11', '+', '22']
     def seperate_by_operators(self): 
-        self.input = re.split(r'([+*^\/()\|\&\!\@\#\`\_])', # splits input on every operator
+        self.input = re.split(f'([{self.operator_symbols}])', # splits input on every operator
                             "".join([str(x) for x in self.input]))
         for x in self.input: # gets rid of nospace characters that may occur due to the re.split
             if x == '':
@@ -47,13 +48,14 @@ class Calculator:
     def refresh_operator_indexes(self):
         self.operator_indexes = {self.DICT_OF_OPERATORS[symbol]:
                                 [int(i) for i, x in enumerate(self.input)
-                                if x == symbol] for symbol in r"*/+()^|&!@#`_"} # matches symbol with list of location of symbol
+                                if x == symbol] for symbol in self.operator_symbols} # matches symbol with list of location of symbol
 
 
     # carries out operations based off of the operator, and the index of the operator, and the input
     def binary_operator_calc_and_sub(self, operator_name, operator_index_in_dict):
         self.refresh_operator_indexes()
         left_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]-1])
+        print(self.input)
         right_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]+1])
         left_index = self.operator_indexes[operator_name][operator_index_in_dict]-1
         right_index = self.operator_indexes[operator_name][operator_index_in_dict]+1
@@ -278,7 +280,8 @@ def from_console():
         import time
         user_input = None
         while user_input != '':
-            user_input = input("Please enter an expression for me to evaluate: ")
+            #user_input = input("Please enter an expression for me to evaluate: ")
+            user_input = 'sin(sin(sin(sin(sin(sin(2))))))'
             time_start = time.time()
             main_calculator = Calculator(user_input)
             main_calculator.calculation(print_bool=True)

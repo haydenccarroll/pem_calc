@@ -145,7 +145,7 @@
     function evaluate_input()
     {
       var input_string = document.getElementById("input_box").value;
-      var python = require('child_process').spawn('python', ['../calc_files/./calculation.py', input_string]);
+      var python = require('child_process').spawn('python', ['calc_files/./calculation.py', input_string]);
       python.stdout.on('data',function(data){
         document.getElementById("input_box").value = data.toString('utf8');
       });
@@ -154,7 +154,7 @@
     function f_to_d()
     {
       var input_string = document.getElementById("input_box").value;
-      var python = require('child_process').spawn('python', ['../calc_files/./f_to_d.py', input_string]);
+      var python = require('child_process').spawn('python', ['calc_files/./f_to_d.py', input_string]);
       python.stdout.on('data',function(data){
         document.getElementById("input_box").value = data.toString('utf8');
       });

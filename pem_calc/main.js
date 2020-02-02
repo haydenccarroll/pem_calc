@@ -12,7 +12,7 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true
     },
-    icon:'images/logo.png',
+    icon:'resources/logo.png',
     
   })
 
