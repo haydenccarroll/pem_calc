@@ -9,5 +9,5 @@ class TestFracDec(unittest.TestCase):
         output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param='0.5')
         self.assertEqual(output, '1/2')
 
-        output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param=str(7/77))
-        self.assertEqual(output, '1/11')
+        output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param=str(0.125))
+        self.assertEqual(output, '7/77')

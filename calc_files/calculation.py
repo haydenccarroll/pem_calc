@@ -1,6 +1,7 @@
 import re
 import fractions
 from calc_files import input_cleaner
+from calc_files import f_to_d
 
 class Calculator:
     def __init__(self, user_input):
@@ -285,8 +286,7 @@ def from_console():
             print('\nthe final output as a decimal: ',
                   round(float(main_calculator.input), 10))
             print('The final output as a fraction: ',
-                  fractions.Fraction(main_calculator.input).limit_denominator())
-
+                  f_to_d.convert_to_frac(main_calculator.input))
             time_end = time.time()
             print('It took ', round((time_end-time_start)*100000, 2),
                   'microseconds for the program to run!\n\n\n\n')
