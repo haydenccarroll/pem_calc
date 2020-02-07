@@ -1,7 +1,7 @@
 import re
 import fractions
-from calc_input_cleaner import clean_input
-
+from calc_files import input_cleaner
+from calc_files import f_to_d
 
 class Calculator:
     def __init__(self, user_input):
@@ -55,7 +55,6 @@ class Calculator:
     def binary_operator_calc_and_sub(self, operator_name, operator_index_in_dict):
         self.refresh_operator_indexes()
         left_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]-1])
-        print(self.input)
         right_operand = float(self.input[self.operator_indexes[operator_name][operator_index_in_dict]+1])
         left_index = self.operator_indexes[operator_name][operator_index_in_dict]-1
         right_index = self.operator_indexes[operator_name][operator_index_in_dict]+1
@@ -99,8 +98,7 @@ class Calculator:
         self.refresh_operator_indexes()
         while self.operator_indexes['LPARAN'] and self.operator_indexes['RPARAN']: #while paranthesis exist
             if len(self.operator_indexes['LPARAN']) != len(self.operator_indexes['RPARAN']): #unequal left and right paranthesis
-                print("unequal left and right parans")
-                return
+                return "unequal left and right parans"
             
             first_sub_index = self.operator_indexes['LPARAN'][-1]
 
@@ -123,14 +121,16 @@ class Calculator:
 
     # calculates all factorials
     def factorial_calc(self):
+        self.refresh_operator_indexes()
         for i in self.operator_indexes['FACTORIAL']:
-            self.refresh_operator_indexes()
             num_to_factorial = int(self.input[i-1])
             current_product = 1
             for z in range(2, num_to_factorial+1):
                 current_product *= z
             self.input[i-1] = current_product
             del self.input[i]
+            self.refresh_operator_indexes()
+
 
 
     # calculates all sine functions
@@ -168,7 +168,6 @@ class Calculator:
         self.refresh_operator_indexes() 
         while self.operator_indexes['COS']:
             for i in self.operator_indexes['COS']:
-                print(i, self.input)
                 answer = self.cos_calc(alt_input=self.input[i+1])
                 self.replace_with_value(answer, [i, i+1])
                 self.refresh_operator_indexes() 
@@ -225,7 +224,7 @@ class Calculator:
             else:
                 temp_output = self.input[self.operator_indexes['SQUARE_ROOT'][0]+1::]
                 del self.input[self.operator_indexes['SQUARE_ROOT'][0]::]
-            temp_output = float(self.calculation(temp_output, False))**0.5
+            temp_output = float(self.calculation(substr=temp_output, print_bool=False))**0.5
             self.input.insert(self.operator_indexes['SQUARE_ROOT'][0], temp_output)
             self.refresh_operator_indexes()
 
@@ -265,7 +264,7 @@ class Calculator:
             substrCalc.calculation()
             return substrCalc.input
     
-        self.stage('Input Correction Output: ', clean_input, print_bool, (self.input))
+        self.stage('Input Correction Output: ', input_cleaner.clean_input, print_bool, (self.input))
         for message, funct in self.MESSAGE_TO_FUNCTS:
             self.stage(message, funct, print_bool)
 
@@ -280,16 +279,14 @@ def from_console():
         import time
         user_input = None
         while user_input != '':
-            #user_input = input("Please enter an expression for me to evaluate: ")
-            user_input = 'sin(sin(sin(sin(sin(sin(2))))))'
+            user_input = input("Please enter an expression for me to evaluate: ")
             time_start = time.time()
             main_calculator = Calculator(user_input)
             main_calculator.calculation(print_bool=True)
             print('\nthe final output as a decimal: ',
                   round(float(main_calculator.input), 10))
             print('The final output as a fraction: ',
-                  fractions.Fraction(main_calculator.input).limit_denominator())
-
+                  f_to_d.convert_to_frac(main_calculator.input))
             time_end = time.time()
             print('It took ', round((time_end-time_start)*100000, 2),
                   'microseconds for the program to run!\n\n\n\n')
