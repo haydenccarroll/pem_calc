@@ -1,6 +1,6 @@
 import re
 import fractions
-from calc_files import calc_input_cleaner
+from calc_files import input_cleaner
 
 class Calculator:
     def __init__(self, user_input):
@@ -263,7 +263,7 @@ class Calculator:
             substrCalc.calculation()
             return substrCalc.input
     
-        self.stage('Input Correction Output: ', calc_input_cleaner.clean_input, print_bool, (self.input))
+        self.stage('Input Correction Output: ', input_cleaner.clean_input, print_bool, (self.input))
         for message, funct in self.MESSAGE_TO_FUNCTS:
             self.stage(message, funct, print_bool)
 
