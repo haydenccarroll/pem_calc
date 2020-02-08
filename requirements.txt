@@ -1,2 +1,1 @@
-unittest
-re
+re==2.2.1

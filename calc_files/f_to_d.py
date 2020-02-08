@@ -1,5 +1,7 @@
 def convert_to_frac(float_str):
     float_str = float_str.split('.')
+
+    float_str[1] = (float_str[1][:7]) if len(float_str[1]) > 7 else float_str[1]
     whole_number = int(float_str[0])
     numerator = int(float_str[1])
     denominator = 10**len(float_str[1])
@@ -8,24 +10,20 @@ def convert_to_frac(float_str):
     return f"{numerator}/{denominator}"
 
 def reduce_frac(num, denom):
-    denom_factors = []
-    for i in range(1, denom+1):
-        if denom % i== 0:
-            denom_factors.append(i)
-
     num_factors = []
-    for i in range(1, num+1):
-        if num % i == 0:
+    for i in reversed(range(2, num//2+1)):
+        if num % i== 0:
             num_factors.append(i)
-    gcf = False
-    for i in reversed(denom_factors):
-        if i in num_factors:
+    num_factors.append(num)
+
+    for i in reversed(num_factors):
+        if denom % i == 0:
             gcf = i
             break
-    print(gcf, denom_factors, num_factors)
-    if gcf:
-        return num//gcf, denom//gcf
-    return num, denom
+    else:
+        gcf = 1
+    print(num_factors)
+    return num//gcf, denom//gcf
 
 
 
@@ -45,7 +43,7 @@ def frac_to_dec(sys_args=True, input_param=None):
             calculator.calculation(print_bool=False)
             return calculator.input
         else:
-            return convert_to_frac(user_input)
+            return convert_to_frac(str(user_input))
     except Exception as e:
         return e
 

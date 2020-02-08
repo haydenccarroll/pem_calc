@@ -10,7 +10,7 @@ This is a fully-functional calculator created in Python 3 with electron.js. The 
 ### To start the calculator using electron:
 1. Clone the repository, anunzip it
 2. Download node.js if you havnot already
-3. Go to the /electron/ projecdirectory and type in ```npstart```
+3. Go to the /electron/ project directory and type in ```npm start``` to the console.
 4. Blam.
 
 ## Errors

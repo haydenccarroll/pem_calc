@@ -1,10 +1,11 @@
 import re
 import fractions
-from calc_files import input_cleaner
-from calc_files import f_to_d
+import input_cleaner
+import f_to_d
 
 class Calculator:
     def __init__(self, user_input):
+        self.original_input = user_input
         self.PI = 3.1415926535897932384626433832795
         self.DICT_OF_OPERATORS =  {'*': 'MULTIPLY',
                                    '/': 'DIVIDE',
@@ -22,11 +23,18 @@ class Calculator:
         self.input = list(user_input)
         self.operator_indexes = dict()
         self.operator_symbols = r"*/+()^|&!@#`_"
-        self.MESSAGE_TO_FUNCTS = [['Absolute Value Output: ', self.abs_val_calc], ['Paranthesis Output: ', self.paran_calc],
-                              ['Factorial Output: ', self.factorial_calc], ['Sine Output: ', self.sin_calc], ['Cosine Output: ', self.cos_calc],
-                              ['Tangent Output: ', self.tan_calc], ['Logarithm Output: ', self.log_calc], ['Square Root Output: ', self.square_root_calc],
-                              ['Exponent Output: ', self.exponent_calc], ['Multiplication Output: ', self.multiplication_calc],
-                              ['Division Output: ', self.division_calc], ['Addition/Subtraction Output: ', self.addition_subtraction_calc]]
+        self.MESSAGE_TO_FUNCTS = [['Absolute Value Output:       ', self.abs_val_calc],
+                                  ['Paranthesis Output:          ', self.paran_calc],
+                                  ['Factorial Output:            ', self.factorial_calc],
+                                  ['Sine Output:                 ', self.sin_calc],
+                                  ['Cosine Output:               ', self.cos_calc],
+                                  ['Tangent Output:              ', self.tan_calc],
+                                  ['Logarithm Output:            ', self.log_calc],
+                                  ['Square Root Output:          ', self.square_root_calc],
+                                  ['Exponent Output:             ', self.exponent_calc], 
+                                  ['Multiplication Output:       ', self.multiplication_calc],
+                                  ['Division Output:             ', self.division_calc], 
+                                  ['Addition/Subtraction Output: ', self.addition_subtraction_calc]]
 
 
     # inserts value by consecutive indexes, eg. ['12', '+', '2'] replace_with_value(14.0, [0,2]) -> [14.0]
@@ -286,19 +294,25 @@ def from_console():
             print('\nthe final output as a decimal: ',
                   round(float(main_calculator.input), 10))
             print('The final output as a fraction: ',
-                  f_to_d.convert_to_frac(main_calculator.input))
+                  f_to_d.frac_to_dec(main_calculator.input))
             time_end = time.time()
             print('It took ', round((time_end-time_start)*100000, 2),
                   'microseconds for the program to run!\n\n\n\n')
 def for_electron_calc():
-    import sys
+    user_input = sys.argv[2]
     try:
-        user_input = sys.argv[1]
         calculator = Calculator(user_input)
         calculator.calculation()
-        print(calculator.input)
+        output = calculator.input
     except:
-        print("Error")
+        output = "Error"
+    finally:
+        with open("../log/previous_calculations.txt", 'a') as file:
+            file.write(f'{user_input}, {output}\n')
+
 if __name__ == '__main__':
-    #for_electron_calc()
-    from_console()
+    import sys
+    if sys.argv[1] == '-e':
+        for_electron_calc()
+    else:
+        from_console()

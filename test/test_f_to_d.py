@@ -10,4 +10,10 @@ class TestFracDec(unittest.TestCase):
         self.assertEqual(output, '1/2')
 
         output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param=str(0.125))
-        self.assertEqual(output, '7/77')
+        self.assertEqual(output, '1/8')
+
+        output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param=str(1.999))
+        self.assertEqual(output, '1999/1000')
+
+        output = calc_files.f_to_d.frac_to_dec(sys_args=False, input_param=str(3.141592653589793238462641))
+        self.assertEqual(output, '15707963/5000000')
