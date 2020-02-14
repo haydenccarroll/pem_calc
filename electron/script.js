@@ -155,11 +155,20 @@
     function f_to_d()
     {
       var input_string = document.getElementById("input_box").value;
-      var python = require('child_process').spawn('python', ['calc_files/./f_to_d.py', input_string]);
-      python.stdout.on('data',function(data){
-        document.getElementById("input_box").value = data.toString('utf8');
-      });
+      const execSync = require('child_process').execSync;
+      var shellCommand = "python ../calc_files/f_to_d.py " + input_string;
+      const cmd = execSync(shellCommand, { encoding: 'utf-8' });  // the default is 'buffer'
 
+      const fs = require('fs');
+      path = require('path');    
+      var output;
+      filePath = path.join(__dirname, '../log/previous_calculations.txt');
+      fs.readFile(filePath, (err, data) => { 
+        if (err) throw err; 
+        output = data.toString().split(',');
+        output = output[output.length-1];
+        document.getElementById("input_box").value = output;
+      });
     }
 
     setInterval(function(){
