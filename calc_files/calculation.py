@@ -1,5 +1,4 @@
 import re
-import fractions
 import input_cleaner
 import f_to_d
 
@@ -294,7 +293,7 @@ def from_console():
             print('\nthe final output as a decimal: ',
                   round(float(main_calculator.input), 10))
             print('The final output as a fraction: ',
-                  f_to_d.frac_to_dec(main_calculator.input))
+                  f_to_d.frac_to_dec(sys_args=False, input_param=main_calculator.input))
             time_end = time.time()
             print('It took ', round((time_end-time_start)*100000, 2),
                   'microseconds for the program to run!\n\n\n\n')
@@ -307,12 +306,19 @@ def for_electron_calc():
     except:
         output = "Error"
     finally:
-        with open("../log/previous_calculations.txt", 'a') as file:
-            file.write(f'{user_input}, {output}\n')
+        with open("../log/previous_calculations.txt", 'ab') as file:
+            string = f'{user_input}, {output}\n'
+            string = string.encode("utf8")
+
+            file.write(string)
+    return output
 
 if __name__ == '__main__':
     import sys
-    if sys.argv[1] == '-e':
-        for_electron_calc()
-    else:
+    try:
+        if sys.argv[1] == '-e':
+            for_electron_calc()
+        else:
+            from_console()
+    except IndexError:
         from_console()
